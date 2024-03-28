@@ -3,7 +3,11 @@
 
 
 def pascal_triangle(n):
-
+    """pascal_triangle
+    arg:
+        n: int
+    return list of int list of pascal triangle
+    """
     if n <= 0:
         return []
 
