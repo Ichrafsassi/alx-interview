@@ -1,63 +1,43 @@
 #!/usr/bin/python3
 import sys
 
-possibilties = []
-for line in sys.stdin:
-    try:
-        possibilties.append(eval(line))
-    except Exception as e:
-        pass
-
-def check_two_queens(new_queen_position, other_queen_position):
-    if new_queen_position[0] == other_queen_position[0] or new_queen_position[1] == other_queen_position[1]:
-        return False
-    if new_queen_position[0] + new_queen_position[1] == other_queen_position[0] + other_queen_position[1]:
-        return False
-    if new_queen_position[0] - new_queen_position[1] == other_queen_position[0] - other_queen_position[1]:
-        return False
+def is_safe(board, row, col):
+    for i in range(row):
+        if board[i] == col or abs(board[i] - col) == row - i:
+            return False
     return True
 
+def solve_nqueens(N, board, row, solutions):
+    if row == N:
+        solutions.append(board[:])
+        return
 
-def possibilty_already_done(possibilty, possibilties_done):
-    if len(possibilties_done) == 0:
-        return False
-    for possibilty_done in possibilties_done:
-        nb_similar = 0
-        for position in possibilty:
-            nb_similar += 1 if position in possibilty_done else 0
-        if nb_similar == len(possibilty_done):
-            return True
-    return False
+    for col in range(N):
+        if is_safe(board, row, col):
+            board[row] = col
+            solve_nqueens(N, board, row + 1, solutions)
 
-result = True
-possibilties_done = []
-for possibilty in possibilties:
-    i = 0
-    while i < len(possibilty) -1:
-        j = i + 1
-        while j < len(possibilty):
-            result = check_two_queens(possibilty[i], possibilty[j])
-            if not result:
-                break
-            j += 1
-        i += 1
-        if not result:
-            break
-    if not result:
-        break
-    else:
-        # good possibilty
-        if possibilty_already_done(possibilty, possibilties_done):
-            result = False
-        else:
-            possibilties_done.append(possibilty)
+def print_solutions(N):
+    if not N.isdigit():
+        print("N must be a number")
+        sys.exit(1)
 
-    if not result:
-        break
-    
+    N = int(N)
+    if N < 4:
+        print("N must be at least 4")
+        sys.exit(1)
 
-if result:
-    print("OK")
-else:
-    print("NOK")
-print(len(possibilties))
+    board = [-1] * N
+    solutions = []
+    solve_nqueens(N, board, 0, solutions)
+
+    for solution in solutions:
+        print([[i, solution[i]] for i in range(N)])
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
+
+    N = sys.argv[1]
+    print_solutions(N)
