@@ -2,24 +2,14 @@
 import sys
 
 def is_safe(board, row, col):
-    # Check if there is a queen in the same column
     for i in range(row):
-        if board[i] == col:
+        if board[i] == col or abs(board[i] - col) == row - i:
             return False
-
-        # Check upper diagonal on left side
-        if board[i] - i == col - row:
-            return False
-
-        # Check upper diagonal on right side
-        if board[i] + i == col + row:
-            return False
-
     return True
 
 def solve_nqueens(N, board, row, solutions):
     if row == N:
-        solutions.append(list(enumerate(board)))
+        solutions.append(board[:])
         return
 
     for col in range(N):
@@ -29,12 +19,12 @@ def solve_nqueens(N, board, row, solutions):
 
 def print_solutions(N):
     if not N.isdigit():
-        print("N must be a number")
+        print("N must be a number", file=sys.stderr)
         sys.exit(1)
 
     N = int(N)
     if N < 4:
-        print("N must be at least 4")
+        print("N must be at least 4", file=sys.stderr)
         sys.exit(1)
 
     board = [-1] * N
@@ -42,11 +32,11 @@ def print_solutions(N):
     solve_nqueens(N, board, 0, solutions)
 
     for solution in solutions:
-        print(solution)
+        print([[i, solution[i]] for i in range(N)])
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: nqueens N")
+        print("Usage: nqueens N", file=sys.stderr)
         sys.exit(1)
 
     N = sys.argv[1]
